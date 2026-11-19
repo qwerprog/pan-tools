@@ -29,12 +29,16 @@ Build() {
   Pack "$1"
 }
 
-# zip 打包
+# 归档打包
 Pack() {
-  cp README.md "$output/$1"
+  cp README.md LICENSE NOTICE "$output/$1"
 
   cd "$output" || exit 1
-  zip -q -r "$1.zip" "$1"
+  if [ "$GOOS" = "linux" ]; then
+    tar -czf "$1.tar.gz" "$1"
+  else
+    zip -q -r "$1.zip" "$1"
+  fi
 
   # 删除
   rm -rf "$1"

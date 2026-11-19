@@ -2,10 +2,13 @@
 package pcsupdate
 
 import (
+	"archive/tar"
 	"archive/zip"
 	"bytes"
+	"compress/gzip"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -164,33 +167,7 @@ func CheckUpdate(version string, yes bool) {
 		}
 	}
 
-	builder := &strings.Builder{}
-	builder.WriteString("pant-" + regexp.QuoteMeta(releaseInfo.TagName) + "-" + runtime.GOOS + "-.*?")
-
-	switch runtime.GOARCH {
-	case "amd64":
-		builder.WriteString("(amd64|x86_64|x64)")
-	case "386":
-		builder.WriteString("(386|x86)")
-	case "arm":
-		builder.WriteString("(armv5|armv7|arm)")
-	case "arm64":
-		builder.WriteString("arm64")
-	case "mips":
-		builder.WriteString("mips")
-	case "mips64":
-		builder.WriteString("mips64")
-	case "mipsle":
-		builder.WriteString("(mipsle|mipsel)")
-	case "mips64le":
-		builder.WriteString("(mips64le|mips64el)")
-	default:
-		builder.WriteString(runtime.GOARCH)
-	}
-
-	builder.WriteString("\\.zip")
-
-	exp := regexp.MustCompile(builder.String())
+	exp := buildReleaseAssetRegexp(releaseInfo.TagName, runtime.GOOS, runtime.GOARCH)
 
 	var targetList []*info
 	for _, asset := range releaseInfo.Assets {
@@ -305,51 +282,12 @@ func CheckUpdate(version string, yes bool) {
 		return
 	}
 
-	// 读取文件
-	reader, err := zip.NewReader(bytes.NewReader(buf.Bytes()), target.size)
+	// 读取并解压更新包（支持 .tar.gz 与 .zip）
+	execPath := pcsutil.ExecutablePath()
+	fileNum, errTimes, err := extractUpdateArchive(execPath, target.filename, buf.Bytes())
 	if err != nil {
 		ui.PrintError(os.Stderr, "读取更新文件发生错误", err, "")
 		return
-	}
-
-	execPath := pcsutil.ExecutablePath()
-
-	var fileNum, errTimes int
-	for _, zipFile := range reader.File {
-		if zipFile == nil {
-			continue
-		}
-
-		info := zipFile.FileInfo()
-		if info.IsDir() {
-			continue
-		}
-
-		fileNum++
-		err = func(zf *zip.File) error {
-			rc, openErr := zf.Open()
-			if openErr != nil {
-				return openErr
-			}
-			defer rc.Close()
-
-			destPath, pathErr := resolveSafeExtractPath(execPath, zf.Name)
-			if pathErr != nil {
-				return pathErr
-			}
-
-			baseName := filepath.Base(destPath)
-			if baseName == "pant" || baseName == "pant.exe" {
-				return update(pcsutil.Executable(), rc)
-			}
-			return update(destPath, rc)
-		}(zipFile)
-
-		if err != nil {
-			errTimes++
-			fmt.Fprintf(os.Stderr, "发生错误, zip 路径: %s, 错误: %s\n", zipFile.Name, err)
-			continue
-		}
 	}
 
 	if fileNum == 0 || errTimes == fileNum {
@@ -358,6 +296,110 @@ func CheckUpdate(version string, yes bool) {
 	}
 
 	ui.PrintSuccess(os.Stdout, "更新完毕, 请重启程序")
+}
+
+func buildReleaseAssetRegexp(tagName, goos, goarch string) *regexp.Regexp {
+	builder := &strings.Builder{}
+	builder.WriteString("pant-" + regexp.QuoteMeta(tagName) + "-" + regexp.QuoteMeta(goos) + "-.*?")
+
+	switch goarch {
+	case "amd64":
+		builder.WriteString("(amd64|x86_64|x64)")
+	case "386":
+		builder.WriteString("(386|x86)")
+	case "arm":
+		builder.WriteString("(armv5|armv7|arm)")
+	case "arm64":
+		builder.WriteString("arm64")
+	case "mips":
+		builder.WriteString("mips")
+	case "mips64":
+		builder.WriteString("mips64")
+	case "mipsle":
+		builder.WriteString("(mipsle|mipsel)")
+	case "mips64le":
+		builder.WriteString("(mips64le|mips64el)")
+	default:
+		builder.WriteString(regexp.QuoteMeta(goarch))
+	}
+
+	builder.WriteString(`(\.tar\.gz|\.zip)$`)
+	return regexp.MustCompile(builder.String())
+}
+
+func extractUpdateArchive(execPath, filename string, data []byte) (fileNum, errTimes int, err error) {
+	if strings.HasSuffix(strings.ToLower(filename), ".tar.gz") {
+		return extractTarGzArchive(execPath, data)
+	}
+	return extractZipArchive(execPath, data)
+}
+
+func applyExtractedEntry(execPath, entryName string, rc io.Reader) error {
+	destPath, pathErr := resolveSafeExtractPath(execPath, entryName)
+	if pathErr != nil {
+		return pathErr
+	}
+	baseName := filepath.Base(destPath)
+	if baseName == "pant" || baseName == "pant.exe" {
+		return update(pcsutil.Executable(), rc)
+	}
+	return update(destPath, rc)
+}
+
+func extractZipArchive(execPath string, data []byte) (fileNum, errTimes int, err error) {
+	reader, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		return 0, 0, err
+	}
+
+	for _, zipFile := range reader.File {
+		if zipFile == nil || zipFile.FileInfo().IsDir() {
+			continue
+		}
+		fileNum++
+		err = func(zf *zip.File) error {
+			rc, openErr := zf.Open()
+			if openErr != nil {
+				return openErr
+			}
+			defer rc.Close()
+			return applyExtractedEntry(execPath, zf.Name, rc)
+		}(zipFile)
+		if err != nil {
+			errTimes++
+			fmt.Fprintf(os.Stderr, "发生错误, zip 路径: %s, 错误: %s\n", zipFile.Name, err)
+		}
+	}
+	return fileNum, errTimes, nil
+}
+
+func extractTarGzArchive(execPath string, data []byte) (fileNum, errTimes int, err error) {
+	gr, err := gzip.NewReader(bytes.NewReader(data))
+	if err != nil {
+		return 0, 0, err
+	}
+	defer gr.Close()
+
+	tr := tar.NewReader(gr)
+	for {
+		hdr, nextErr := tr.Next()
+		if errors.Is(nextErr, io.EOF) {
+			break
+		}
+		if nextErr != nil {
+			return fileNum, errTimes, nextErr
+		}
+		if hdr == nil || (hdr.Typeflag != tar.TypeReg && hdr.Typeflag != tar.TypeRegA) {
+			continue
+		}
+		fileNum++
+		entryName := strings.TrimPrefix(hdr.Name, "./")
+		if err := applyExtractedEntry(execPath, entryName, tr); err != nil {
+			errTimes++
+			fmt.Fprintf(os.Stderr, "发生错误, tar 路径: %s, 错误: %s\n", hdr.Name, err)
+		}
+	}
+	return fileNum, errTimes, nil
 }
 
 func resolveSafeExtractPath(baseDir, zipEntryName string) (string, error) {

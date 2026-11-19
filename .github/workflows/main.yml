@@ -61,7 +61,11 @@ jobs:
           mkdir -p "$PKG_DIR"
           cp "output/$BINARY_NAME" "$PKG_DIR/pant${BINARY_SUFFIX}"
           cp README.md LICENSE NOTICE "$PKG_DIR/"
-          (cd pkg && zip -q -r "../output/pant-${VERSION_TAG}-${GOOS}-${GOARCH}.zip" "pant-${VERSION_TAG}-${GOOS}-${GOARCH}")
+          if [ "$GOOS" = "linux" ]; then
+            (cd pkg && tar -czf "../output/pant-${VERSION_TAG}-${GOOS}-${GOARCH}.tar.gz" "pant-${VERSION_TAG}-${GOOS}-${GOARCH}")
+          else
+            (cd pkg && zip -q -r "../output/pant-${VERSION_TAG}-${GOOS}-${GOARCH}.zip" "pant-${VERSION_TAG}-${GOOS}-${GOARCH}")
+          fi
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         if: ${{ !github.head_ref }}
@@ -87,4 +91,4 @@ jobs:
           TAG_NAME: ${{ github.ref_name }}
           REPO: ${{ github.repository }}
         run: |
-          gh release create "$TAG_NAME" artifacts/*.zip --repo "$REPO" --title "$TAG_NAME" --generate-notes
+          gh release create "$TAG_NAME" artifacts/*.zip artifacts/*.tar.gz --repo "$REPO" --title "$TAG_NAME" --generate-notes

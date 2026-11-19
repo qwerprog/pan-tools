@@ -70,18 +70,27 @@ download_release() {
 
   api_url="https://api.github.com/repos/$REPO/releases/latest"
   release_json=$(curl -fsSL "$api_url" 2>/dev/null) || return 1
-  dl_url=$(printf '%s\n' "$release_json" | grep -oE "https://[^\"]+pant-[^\"]*-${os}-${arch}\\.zip" | head -n 1 || true)
+  if [ "$os" = "linux" ]; then
+    ext="tar.gz"
+    dl_url=$(printf '%s\n' "$release_json" | grep -oE "https://[^\"]+pant-[^\"]*-${os}-${arch}\\.tar\\.gz" | head -n 1 || true)
+  else
+    ext="zip"
+    dl_url=$(printf '%s\n' "$release_json" | grep -oE "https://[^\"]+pant-[^\"]*-${os}-${arch}\\.zip" | head -n 1 || true)
+  fi
   [ -n "$dl_url" ] || return 1
 
   tmp_dir=$(mktemp -d)
   trap 'rm -rf "$tmp_dir"' EXIT
-  zip_file="$tmp_dir/pant.zip"
-  curl -fsSL "$dl_url" -o "$zip_file" || return 1
+  archive_file="$tmp_dir/pant.$ext"
+  curl -fsSL "$dl_url" -o "$archive_file" || return 1
 
-  if command -v unzip >/dev/null 2>&1; then
-    unzip -qo "$zip_file" -d "$tmp_dir/unpack" || return 1
+  mkdir -p "$tmp_dir/unpack"
+  if [ "$ext" = "tar.gz" ]; then
+    tar -xzf "$archive_file" -C "$tmp_dir/unpack" || return 1
+  elif command -v unzip >/dev/null 2>&1; then
+    unzip -qo "$archive_file" -d "$tmp_dir/unpack" || return 1
   elif command -v python3 >/dev/null 2>&1; then
-    python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$zip_file" "$tmp_dir/unpack" || return 1
+    python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$archive_file" "$tmp_dir/unpack" || return 1
   else
     return 1
   fi
