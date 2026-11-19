@@ -1,0 +1,30 @@
+{
+  "name": "pan-tools",
+  "displayName": "pan-tools (Baidu Netdisk)",
+  "version": "0.1.0",
+  "description": "Browse, search, download, upload, transfer share links, and manage Baidu Netdisk via the pant Go CLI.",
+  "logo": "assets/logo.svg",
+  "author": {
+    "name": "qwerprog",
+    "url": "https://github.com/qwerprog"
+  },
+  "homepage": "https://github.com/qwerprog/pan-tools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qwerprog/pan-tools"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "baidu-netdisk",
+    "baidupan",
+    "cloud-storage",
+    "cli",
+    "pant",
+    "pan-tools"
+  ],
+  "suggestedPrompts": [
+    "查看我的百度网盘空间配额和当前登录账号",
+    "在百度网盘中搜索最近的 PDF 文件并列出路径与大小",
+    "帮我把这个百度网盘分享链接转存到网盘指定目录"
+  ]
+}

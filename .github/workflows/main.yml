@@ -64,9 +64,33 @@ jobs:
           export BINARY_NAME="${BINARY_PREFIX}${GOOS}_${GOARCH}${BINARY_SUFFIX}"
           export CGO_ENABLED=0
           go build -o "output/$BINARY_NAME" -trimpath -ldflags "-w -s -X main.Version=${VERSION_TAG}" .
+          PKG_DIR="pkg/pant-${VERSION_TAG}-${GOOS}-${GOARCH}"
+          mkdir -p "$PKG_DIR"
+          cp "output/$BINARY_NAME" "$PKG_DIR/pant${BINARY_SUFFIX}"
+          cp README.md LICENSE NOTICE "$PKG_DIR/"
+          (cd pkg && zip -q -r "../output/pant-${VERSION_TAG}-${GOOS}-${GOARCH}.zip" "pant-${VERSION_TAG}-${GOOS}-${GOARCH}")
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         if: ${{ !github.head_ref }}
         with:
           name: ${{ matrix.goos }}_${{ matrix.goarch }}
           path: output/
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          merge-multiple: true
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG_NAME" artifacts/*.zip --title "$TAG_NAME" --generate-notes
