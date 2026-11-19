@@ -1,0 +1,43 @@
+{
+    "FixedFileInfo": {
+        "FileVersion": {
+            "Major": 4,
+            "Minor": 0,
+            "Patch": 2,
+            "Build": 0
+        },
+        "ProductVersion": {
+            "Major": 4,
+            "Minor": 0,
+            "Patch": 2,
+            "Build": 0
+        },
+        "FileFlagsMask": "3f",
+        "FileFlags ": "00",
+        "FileOS": "040004",
+        "FileType": "01",
+        "FileSubType": "00"
+    },
+    "StringFileInfo": {
+        "Comments": "",
+        "CompanyName": "pan-tools Contributors",
+        "FileDescription": "pan-tools - 现代百度网盘命令行与交互式终端客户端",
+        "FileVersion": "4.0.2",
+        "InternalName": "pant",
+        "LegalCopyright": "© 2016-2026 iikira, qjfoidnh & pan-tools Contributors",
+        "LegalTrademarks": "",
+        "OriginalFilename": "pant.exe",
+        "PrivateBuild": "",
+        "ProductName": "pan-tools",
+        "ProductVersion": "4.0.2",
+        "SpecialBuild": ""
+    },
+    "VarFileInfo": {
+        "Translation": {
+            "LangID": "0409",
+            "CharsetID": "04B0"
+        }
+    },
+    "IconPath": "assets/pant.ico",
+    "ManifestPath": "pant.exe.manifest"
+}

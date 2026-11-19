@@ -1,0 +1,72 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  BINARY_PREFIX: "pant_"
+  BINARY_SUFFIX: ""
+  PR_PROMPT: "::warning:: Build artifact will not be uploaded due to the workflow is triggered by pull request."
+
+jobs:
+  test:
+    name: Vet & Unit Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Vet and test
+        run: |
+          go vet ./...
+          go test -short -count=1 ./...
+
+  build:
+    name: Build binary CI
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # build in parallel: linux/386, linux/amd64, linux/arm, linux/arm64, windows/386, windows/amd64, windows/arm64, darwin/amd64, darwin/arm64
+        goos: [linux, windows, darwin]
+        goarch: ["386", amd64, arm, arm64]
+        exclude:
+          - goos: darwin
+            goarch: arm
+          - goos: darwin
+            goarch: "386"
+          - goos: windows
+            goarch: arm
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Cache downloaded module
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ matrix.goos }}-${{ matrix.goarch }}-${{ hashFiles('**/go.sum') }}
+      - name: Build binary file
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          IS_PR: ${{ !!github.head_ref }}
+          VERSION_TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'v4.0.2-dev' }}
+        run: |
+          if [ "$GOOS" = "windows" ]; then export BINARY_SUFFIX="$BINARY_SUFFIX.exe"; fi
+          if $IS_PR ; then echo "$PR_PROMPT"; fi
+          export BINARY_NAME="${BINARY_PREFIX}${GOOS}_${GOARCH}${BINARY_SUFFIX}"
+          export CGO_ENABLED=0
+          go build -o "output/$BINARY_NAME" -trimpath -ldflags "-w -s -X main.Version=${VERSION_TAG}" .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        if: ${{ !github.head_ref }}
+        with:
+          name: ${{ matrix.goos }}_${{ matrix.goarch }}
+          path: output/

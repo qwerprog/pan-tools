@@ -1,0 +1,16 @@
+pan-tools (pant)
+Copyright 2026 pan-tools Contributors
+
+This product is a derivative work licensed under the Apache License, Version 2.0
+(see LICENSE).
+
+Upstream Attribution:
+This software is derived from and includes components originally developed by:
+- iikira/BaiduPCS-Go (Copyright 2016-2020 iikira, Apache License 2.0)
+- qjfoidnh/BaiduPCS-Go (https://github.com/qjfoidnh/BaiduPCS-Go, Copyright 2018-2026 qjfoidnh, Apache License 2.0)
+
+Summary of Significant Modifications in pan-tools:
+- Modularized CLI/REPL entry point (`internal/cliapp`), decoupled terminal UI layer (`internal/ui`), and added a fullscreen Bubble Tea file explorer (`internal/tui`).
+- Added standalone terminal QR code login (`internal/pcscommand/qrlogin.go`) and interactive login method selection (`pant login` / `pant login -qr`).
+- Removed external GPL-3.0 dependencies (`Baidu-Login` and `baidu-tools`), replacing AES/GZIP/Base64 helpers with pure Go standard library implementations (`pcsutil/crypto.go`, `baidupcs/internal/panhome/sign.go`) and switching user info / UK lookup to HTTPS Baidu Netdisk APIs.
+- Rebranded the CLI binary, runtime configuration directory (`~/.config/pan-tools`), environment variables (`PANT_*`), and documentation to `pan-tools` (`pant`).
