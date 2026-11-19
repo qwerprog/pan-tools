@@ -57,7 +57,7 @@ jobs:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
           IS_PR: ${{ !!github.head_ref }}
-          VERSION_TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'v4.0.2-dev' }}
+          VERSION_TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'v5.0.0-dev' }}
         run: |
           if [ "$GOOS" = "windows" ]; then export BINARY_SUFFIX="$BINARY_SUFFIX.exe"; fi
           if $IS_PR ; then echo "$PR_PROMPT"; fi

@@ -8,7 +8,7 @@ import (
 
 var (
 	// Version 版本号
-	Version = "v4.0.2-dev"
+	Version = "v5.0.0-dev"
 )
 
 func main() {

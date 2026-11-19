@@ -4,7 +4,7 @@ name="pant"
 version=$1
 
 if [ "$1" = "" ]; then
-  version=v4.0.2
+  version=v5.0.0
 fi
 
 output="out"

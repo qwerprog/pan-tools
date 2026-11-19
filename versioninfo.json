@@ -1,15 +1,15 @@
 {
     "FixedFileInfo": {
         "FileVersion": {
-            "Major": 4,
+            "Major": 5,
             "Minor": 0,
-            "Patch": 2,
+            "Patch": 0,
             "Build": 0
         },
         "ProductVersion": {
-            "Major": 4,
+            "Major": 5,
             "Minor": 0,
-            "Patch": 2,
+            "Patch": 0,
             "Build": 0
         },
         "FileFlagsMask": "3f",
@@ -22,14 +22,14 @@
         "Comments": "",
         "CompanyName": "pan-tools Contributors",
         "FileDescription": "pan-tools - 现代百度网盘命令行与交互式终端客户端",
-        "FileVersion": "4.0.2",
+        "FileVersion": "5.0.0",
         "InternalName": "pant",
         "LegalCopyright": "© 2016-2026 iikira, qjfoidnh & pan-tools Contributors",
         "LegalTrademarks": "",
         "OriginalFilename": "pant.exe",
         "PrivateBuild": "",
         "ProductName": "pan-tools",
-        "ProductVersion": "4.0.2",
+        "ProductVersion": "5.0.0",
         "SpecialBuild": ""
     },
     "VarFileInfo": {
