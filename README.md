@@ -87,11 +87,10 @@ pant tf <分享链接>    # 转存分享链接或整段分享口令
 
 ---
 
-## 文档与反馈
+## 文档
 
 - 架构与接口说明：[docs/README.md](docs/README.md)
 - CLI / TUI 设计规范：[CLI_REDESIGN_PROPOSAL.md](CLI_REDESIGN_PROPOSAL.md)
-- 问题反馈：[qwerprog/pan-tools Issues](https://github.com/qwerprog/pan-tools/issues)
 
 ---
 
