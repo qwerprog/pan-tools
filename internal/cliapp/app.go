@@ -11,7 +11,6 @@ import (
 
 	"github.com/qjfoidnh/BaiduPCS-Go/internal/pcsconfig"
 	"github.com/qjfoidnh/BaiduPCS-Go/internal/ui"
-	"github.com/qjfoidnh/BaiduPCS-Go/pcsutil"
 	"github.com/qjfoidnh/BaiduPCS-Go/pcsverbose"
 	"github.com/urfave/cli"
 )
@@ -38,10 +37,8 @@ var (
 	}
 )
 
-// InitConfig 初始化工作目录和全局配置
+// InitConfig 初始化全局配置
 func InitConfig() {
-	pcsutil.ChWorkDir()
-
 	err := pcsconfig.Config.Init()
 	switch err {
 	case nil:

@@ -74,10 +74,14 @@ func ParseFileSizeStr(ss string) (size int64, err error) {
 	}
 
 	var (
-		sizeStr      = ss[:i] // 数字部分
-		unitStr      = ss[i:] // 单位部分
-		sizeFloat, _ = strconv.ParseFloat(sizeStr, 10)
+		sizeStr = ss[:i] // 数字部分
+		unitStr = ss[i:] // 单位部分
 	)
+	sizeFloat, parseErr := strconv.ParseFloat(sizeStr, 64)
+	if parseErr != nil {
+		err = errors.New("converter: invalid size: " + ss)
+		return
+	}
 	switch strings.ToUpper(unitStr) {
 	case "", "B":
 		size = int64(sizeFloat)

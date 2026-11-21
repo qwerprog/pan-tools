@@ -107,8 +107,16 @@ func (t *inProcessTask) SetStderr(w io.Writer) { t.stderr = w }
 func (t *inProcessTask) Run() error {
 	err := t.fn()
 	if err != nil {
-		ui.PrintError(os.Stderr, "传输任务出现错误", err, "")
-		fmt.Fprint(os.Stdout, "\n按 Enter 键返回网盘浏览器...")
+		errOut := t.stderr
+		if errOut == nil {
+			errOut = os.Stderr
+		}
+		out := t.stdout
+		if out == nil {
+			out = os.Stdout
+		}
+		ui.PrintError(errOut, "传输任务出现错误", err, "")
+		fmt.Fprint(out, "\n按 Enter 键返回网盘浏览器...")
 		var buf [1]byte
 		if t.stdin != nil {
 			_, _ = t.stdin.Read(buf[:])

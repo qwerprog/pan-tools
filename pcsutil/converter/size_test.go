@@ -29,7 +29,7 @@ func TestParseFileSizeStrAndConvertFileSize(t *testing.T) {
 		}
 	}
 
-	for _, invalid := range []string{"", "abc", "12XYZ"} {
+	for _, invalid := range []string{"", "abc", "12XYZ", ".", "1.2.3MB"} {
 		if _, err := converter.ParseFileSizeStr(invalid); err == nil {
 			t.Fatalf("expected error for invalid size string %q", invalid)
 		}

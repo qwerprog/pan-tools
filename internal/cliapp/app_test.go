@@ -332,18 +332,18 @@ func TestPromptStyleCLIFlagConfigSetEnvAndREPLFormatting(t *testing.T) {
 
 	// 5. Hyphenated alias `config set --prompt-style starship` and top-level `--prompt_style boxed` also work.
 	t.Setenv(ui.EnvPromptStyle, "")
-	stdout, stderr, err = captureRun([]string{"pant", "--no-color", "config", "set", "--prompt-style", "starship"})
+	_, stderr, err = captureRun([]string{"pant", "--no-color", "config", "set", "--prompt-style", "starship"})
 	if err != nil || stderr != "" || pcsconfig.Config.PromptStyle != "starship" {
 		t.Fatalf("config set --prompt-style starship failed: err=%v stderr=%q style=%q", err, stderr, pcsconfig.Config.PromptStyle)
 	}
-	stdout, stderr, err = captureRun([]string{"pant", "--prompt_style", "boxed", "--no-color", "env"})
+	_, stderr, err = captureRun([]string{"pant", "--prompt_style", "boxed", "--no-color", "env"})
 	if err != nil || stderr != "" || ui.GetPromptStyleOverride() != "boxed" {
 		t.Fatalf("pant --prompt_style boxed env failed: err=%v stderr=%q override=%q", err, stderr, ui.GetPromptStyleOverride())
 	}
 
 	// 6. `config reset` restores PromptStyle to 'starship'.
 	_, _, _ = captureRun([]string{"pant", "--no-color", "config", "set", "-prompt_style", "boxed"})
-	stdout, stderr, err = captureRun([]string{"pant", "--no-color", "config", "reset"})
+	_, stderr, err = captureRun([]string{"pant", "--no-color", "config", "reset"})
 	if err != nil || stderr != "" {
 		t.Fatalf("config reset failed: err=%v stderr=%q", err, stderr)
 	}
@@ -628,7 +628,7 @@ func TestLoginCLIFlagsInteractiveMenuAndNonInteractiveGuard(t *testing.T) {
 	}
 
 	// 4b. Option 2 ("粘贴 Cookies 登录"): "2\nCookie: BDUSS=paste_bduss; STOKEN=paste_stoken\n"
-	stdout, stderr, err = runCLI([]string{"pant", "--no-color", "login"}, "2\nCookie: BDUSS=paste_bduss; STOKEN=paste_stoken; BAIDUID=paste_bid\n")
+	_, stderr, err = runCLI([]string{"pant", "--no-color", "login"}, "2\nCookie: BDUSS=paste_bduss; STOKEN=paste_stoken; BAIDUID=paste_bid\n")
 	if err != nil {
 		t.Fatalf("interactive Cookie paste login failed: %v (stderr=%s)", err, stderr)
 	}
@@ -637,7 +637,7 @@ func TestLoginCLIFlagsInteractiveMenuAndNonInteractiveGuard(t *testing.T) {
 	}
 
 	// 4c. Option 3 ("输入 BDUSS + STOKEN 登录"): "\x1b[B\x1b[B\nmanual_bduss\nmanual_stoken\n"
-	stdout, stderr, err = runCLI([]string{"pant", "--no-color", "login"}, "\x1b[B\x1b[B\nmanual_bduss\nmanual_stoken\n")
+	_, stderr, err = runCLI([]string{"pant", "--no-color", "login"}, "\x1b[B\x1b[B\nmanual_bduss\nmanual_stoken\n")
 	if err != nil {
 		t.Fatalf("interactive BDUSS+STOKEN login failed: %v (stderr=%s)", err, stderr)
 	}
@@ -692,7 +692,7 @@ func TestLoginCLIFlagsInteractiveMenuAndNonInteractiveGuard(t *testing.T) {
 	t.Setenv("HOME", fakeHome)
 	t.Setenv("APPDATA", fakeHome)
 	t.Setenv(pcsconfig.EnvPanToolsConfigDir, "")
-	stdout, stderr, err = runCLI([]string{"pant", "--no-color", "login", "-qr"}, "")
+	_, stderr, err = runCLI([]string{"pant", "--no-color", "login", "-qr"}, "")
 	if err != nil {
 		t.Fatalf("pant login -qr with default HOME config dir failed: %v (stderr=%s)", err, stderr)
 	}
