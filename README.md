@@ -20,6 +20,20 @@
 
 ### 1. 安装与编译
 
+#### 一键脚本安装 (推荐)
+
+运行以下单行命令，将自动检测操作系统与硬件架构，下载并安装最新版 `pant` 二进制文件：
+
+**Linux / macOS (Bash / Sh)**:
+```bash
+curl -fsSL https://raw.githubusercontent.com/qwerprog/pan-tools/main/install.sh | bash
+```
+
+**Windows (PowerShell)**:
+```powershell
+irm https://raw.githubusercontent.com/qwerprog/pan-tools/main/install.ps1 | iex
+```
+
 #### Arch Linux (AUR)
 
 ```bash
