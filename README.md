@@ -1,5 +1,9 @@
 # pan-tools (`pant`)
 
+<p align="center">
+  <img src="docs/banner.svg" alt="pan-tools (pant) - Baidu Netdisk CLI & TUI" width="100%" />
+</p>
+
 现代百度网盘 Go 命令行与交互式终端客户端（可执行命令：`pant`）。
 
 ## 核心特性
