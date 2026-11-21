@@ -14,9 +14,31 @@
 
 ## 快速开始
 
-### 1. 获取与编译
+### 1. 安装与编译
 
-可从 [GitHub Releases](https://github.com/qwerprog/pan-tools/releases) 下载对应平台预编译程序，或自行编译（需 Go 1.25+）：
+#### Arch Linux (AUR)
+
+```bash
+yay -S pan-tools-bin
+# 或
+paru -S pan-tools-bin
+```
+
+#### macOS (Homebrew)
+
+```bash
+brew install qwerprog/pan-tools/pant
+```
+
+#### Windows (WinGet)
+
+```powershell
+winget install QwerProg.pan-tools
+```
+
+#### 手动下载或源码编译
+
+也可从 [GitHub Releases](https://github.com/qwerprog/pan-tools/releases) 下载对应平台预编译压缩包（Linux `.tar.gz` / macOS & Windows `.zip`），或自行编译（需 Go 1.25+）：
 
 ```bash
 # 本机编译（Windows 下输出为 pant.exe）
