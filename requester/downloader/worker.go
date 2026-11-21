@@ -22,7 +22,6 @@ type (
 		speedsStat   *speeds.Speeds
 		id           int
 		url          string
-		referer      string
 		acceptRanges string
 		client       *requester.HTTPClient
 		firstResp    *http.Response
@@ -30,7 +29,6 @@ type (
 		writeMu      *sync.Mutex
 		execMu       sync.Mutex
 
-		pauseChan              chan struct{}
 		ctrlMu                 sync.Mutex
 		workerCancelFunc       context.CancelFunc
 		resetFunc              context.CancelFunc
@@ -61,7 +59,6 @@ func NewWorker(id int, durl string, writerAt io.WriterAt) *Worker {
 		url:        durl,
 		writerAt:   writerAt,
 		speedsStat: &speeds.Speeds{},
-		pauseChan:  make(chan struct{}),
 	}
 }
 
@@ -101,9 +98,6 @@ func (wer *Worker) lazyInit() {
 	if wer.client == nil {
 		wer.client = requester.NewHTTPClient()
 	}
-	if wer.pauseChan == nil {
-		wer.pauseChan = make(chan struct{})
-	}
 	if wer.wrange == nil {
 		wer.wrange = &transfer.Range{}
 	}
@@ -142,11 +136,6 @@ func (wer *Worker) SetRange(r *transfer.Range) {
 	wer.wrange.StoreEnd(r.LoadEnd())
 }
 
-// SetReferer 设置来源
-func (wer *Worker) SetReferer(referer string) {
-	wer.referer = referer
-}
-
 // SetWriteMutex 设置数据写锁
 func (wer *Worker) SetWriteMutex(mu *sync.Mutex) {
 	wer.writeMu = mu
@@ -176,29 +165,6 @@ func (wer *Worker) GetSpeedsPerSecond() int64 {
 	sp := wer.speedsStat
 	wer.ctrlMu.Unlock()
 	return sp.GetSpeeds()
-}
-
-// Pause 暂停下载
-func (wer *Worker) Pause() {
-	wer.lazyInit()
-	if wer.acceptRanges == "" {
-		pcsverbose.Verbosef("WARNING: worker unsupport pause")
-		return
-	}
-
-	if wer.status.StatusCode() == StatusCodePaused {
-		return
-	}
-	wer.pauseChan <- struct{}{}
-	wer.setStatus(StatusCodePaused)
-}
-
-// Resume 恢复下载
-func (wer *Worker) Resume() {
-	if wer.status.StatusCode() != StatusCodePaused {
-		return
-	}
-	go wer.Execute()
 }
 
 // Cancel 取消下载
@@ -279,9 +245,6 @@ func (wer *Worker) Execute() {
 	wer.execMu.Lock()
 	defer wer.execMu.Unlock()
 
-	if wer.status.StatusCode() == StatusCodePaused {
-		return
-	}
 	wer.setStatus(StatusCodeInit)
 	single := wer.acceptRanges == ""
 
@@ -307,9 +270,6 @@ func (wer *Worker) Execute() {
 	}()
 
 	header := map[string]string{}
-	if wer.referer != "" {
-		header["Referer"] = wer.referer
-	}
 	if wer.acceptRanges != "" && wer.wrange.Len() >= 0 {
 		header["Range"] = fmt.Sprintf("%s=%d-%d", wer.acceptRanges, wer.wrange.LoadBegin(), wer.wrange.LoadEnd()-1)
 	}
@@ -402,8 +362,6 @@ func (wer *Worker) Execute() {
 			return
 		case <-resetCtx.Done():
 			wer.setStatus(StatusCodeReset)
-			return
-		case <-wer.pauseChan:
 			return
 		default:
 			wer.setStatus(StatusCodeDownloading)

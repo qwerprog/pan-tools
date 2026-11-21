@@ -120,11 +120,6 @@ func (baidu *Baidu) PathJoin(p string) string {
 // BaiduUserList 百度帐号列表
 type BaiduUserList []*Baidu
 
-// NewUserInfoByBDUSS 通过 HTTPS 百度网盘接口检测 BDUSS 有效性并获取基础用户信息 (无法获取 ptoken 和 stoken)
-func NewUserInfoByBDUSS(bduss string) (b *Baidu, err error) {
-	return (&PCSConfig{}).newUserInfoByNetdisk(bduss, "", "")
-}
-
 type netdiskXpanUinfoJSON struct {
 	Errno       int    `json:"errno"`
 	Errmsg      string `json:"errmsg"`

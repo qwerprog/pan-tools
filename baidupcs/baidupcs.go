@@ -19,8 +19,6 @@ import (
 const (
 	// OperationGetUK 获取UK
 	OperationGetUK = "获取UK"
-	// OperationGetCursorDiff
-	OperationGetCursorDiff = "获取cursor后文件列表diff信息"
 	// OperationGetPCSServer 获取可用的psc服务器
 	OperationGetPCSServer = "获取可用的PCS服务器列表"
 	// OperationQuotaInfo 获取当前用户空间配额信息
@@ -123,11 +121,6 @@ var (
 		Scheme: "https",
 		Host:   "pan.baidu.com",
 	}
-
-	baiduPcsComURL = &url.URL{
-		Scheme: "http",
-		Host:   "baidupcs.com",
-	}
 )
 
 type (
@@ -214,15 +207,6 @@ func NewPCS(appID int, bduss string) *BaiduPCS {
 	}
 }
 
-// NewPCSWithClient 提供app_id, 自定义客户端, 返回 BaiduPCS 对象
-func NewPCSWithClient(appID int, client *requester.HTTPClient) *BaiduPCS {
-	pcs := &BaiduPCS{
-		appID:  appID,
-		client: client,
-	}
-	return pcs
-}
-
 // NewPCSWithCookieStr 提供app_id, cookie 字符串, 返回 BaiduPCS 对象
 func NewPCSWithCookieStr(appID int, cookieStr string) *BaiduPCS {
 	pcs := &BaiduPCS{
@@ -273,20 +257,6 @@ func (pcs *BaiduPCS) GetBDUSS() (bduss string) {
 	cookies := pcs.client.Jar.Cookies(baiduComURL)
 	for _, cookie := range cookies {
 		if cookie.Name == "BDUSS" {
-			return cookie.Value
-		}
-	}
-	return ""
-}
-
-// GetBAIDUID 获取BAIDUID
-func (pcs *BaiduPCS) GetBAIDUID() (baiduid string) {
-	if pcs.client == nil || pcs.client.Jar == nil {
-		return ""
-	}
-	cookies := pcs.client.Jar.Cookies(baiduComURL)
-	for _, cookie := range cookies {
-		if cookie.Name == "BAIDUID" {
 			return cookie.Value
 		}
 	}

@@ -3,10 +3,8 @@ package baidupcs
 import (
 	"io"
 	"net/http"
-	"net/url"
 	"path"
 	"strconv"
-	"strings"
 
 	"github.com/qjfoidnh/BaiduPCS-Go/baidupcs/pcserror"
 )
@@ -91,60 +89,6 @@ func (pcs *BaiduPCS) PrepareFakeRapidUploadV2(targetPath, policy string, length,
 	return pcs.prepareFakeRapidUploadV2(targetPath, rtype, dataTime, blockListMD5)
 }
 
-// PrepareUpload 上传单个文件, 只返回服务器响应数据和错误信息
-func (pcs *BaiduPCS) PrepareUpload(policy string, targetPath string, uploadFunc UploadFunc) (dataReadCloser io.ReadCloser, pcsError pcserror.Error) {
-	pcs.lazyInit()
-
-	pcsURL := pcs.generatePCSURL("file", "upload", map[string]string{
-		"path":  targetPath,
-		"ondup": strings.ReplaceAll(policy, "rsync", "overwrite"),
-	})
-	baiduPCSVerbose.Infof("%s URL: %s\n", OperationUpload, pcsURL)
-
-	resp, err := uploadFunc(pcsURL.String(), pcs.client.Jar)
-	if err != nil {
-		handleRespClose(resp)
-		return nil, &pcserror.PCSErrInfo{
-			Operation: OperationUpload,
-			ErrType:   pcserror.ErrTypeNetError,
-			Err:       err,
-		}
-	}
-
-	pcsError = handleRespStatusError(OperationUpload, resp)
-	if pcsError != nil {
-		return nil, pcsError
-	}
-
-	return resp.Body, nil
-}
-
-// PrepareUploadTmpFile 分片上传—文件分片及上传, 只返回服务器响应数据和错误信息
-func (pcs *BaiduPCS) PrepareUploadTmpFile(uploadFunc UploadFunc) (dataReadCloser io.ReadCloser, pcsError pcserror.Error) {
-	pcs.lazyInit()
-	pcsURL := pcs.generatePCSURL("file", "upload", map[string]string{
-		"type": "tmpfile",
-	})
-	baiduPCSVerbose.Infof("%s URL: %s\n", OperationUploadTmpFile, pcsURL)
-
-	resp, err := uploadFunc(pcsURL.String(), pcs.client.Jar)
-	if err != nil {
-		handleRespClose(resp)
-		return nil, &pcserror.PCSErrInfo{
-			Operation: OperationUploadTmpFile,
-			ErrType:   pcserror.ErrTypeNetError,
-			Err:       err,
-		}
-	}
-
-	pcsError = handleRespStatusError(OperationUploadTmpFile, resp)
-	if pcsError != nil {
-		return nil, pcsError
-	}
-
-	return resp.Body, nil
-}
-
 // PrepareUploadCreateSuperFile 分片上传—合并分片文件, 只返回服务器响应数据和错误信息
 func (pcs *BaiduPCS) PrepareUploadCreateSuperFile(uploadid, rtype string, fileSize int64, targetPath string, blockList []string) (dataReadCloser io.ReadCloser, pcsError pcserror.Error) {
 	pcs.lazyInit()
@@ -160,31 +104,6 @@ func (pcs *BaiduPCS) PrepareUploadCreateSuperFile(uploadid, rtype string, fileSi
 		"rtype":       rtype,
 		"block_list":  mergeStringList(blockList...),
 		"target_path": path.Dir(targetPath),
-	}, map[string]string{
-		"Content-Type": "application/x-www-form-urlencoded",
-	})
-}
-
-// PrepareUploadPrecreate 分片上传—Precreate, 只返回服务器响应数据和错误信息
-func (pcs *BaiduPCS) PrepareUploadPrecreate(targetPath, contentMD5, sliceMD5, crc32 string, size int64, blockList []string) (dataReadCloser io.ReadCloser, panError pcserror.Error) {
-	pcs.lazyInit()
-	panURL := &url.URL{
-		Scheme: "https",
-		Host:   PanBaiduCom,
-		Path:   "api/precreate",
-	}
-	baiduPCSVerbose.Infof("%s URL: %s\n", OperationUploadPrecreate, panURL)
-
-	return pcs.sendReqReturnReadCloser(reqTypePan, OperationUploadPrecreate, http.MethodPost, panURL.String(), map[string]string{
-		"path":         targetPath,
-		"size":         strconv.FormatInt(size, 10),
-		"isdir":        "0",
-		"block_list":   mergeStringList(blockList...),
-		"autoinit":     "1",
-		"content-md5":  contentMD5,
-		"slice-md5":    sliceMD5,
-		"contentCrc32": crc32,
-		"rtype":        "2",
 	}, map[string]string{
 		"Content-Type": "application/x-www-form-urlencoded",
 	})

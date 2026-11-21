@@ -96,7 +96,6 @@ type Model struct {
 	renameSource string
 
 	userName   string
-	uid        uint64
 	saveDir    string
 	vipLabel   string
 	isVIP      bool
@@ -114,7 +113,7 @@ func NewModel(backend CloudBackend, startDir string) *Model {
 	if startDir == "" {
 		startDir = "/"
 	}
-	userName, uid, saveDir, _ := backend.UserSummary()
+	userName, _, saveDir, _ := backend.UserSummary()
 	return &Model{
 		backend:    backend,
 		width:      100,
@@ -124,7 +123,6 @@ func NewModel(backend CloudBackend, startDir string) *Model {
 		selected:   make(map[string]*baidupcs.FileDirectory),
 		lastDirPos: make(map[string]int),
 		userName:   userName,
-		uid:        uid,
 		saveDir:    saveDir,
 	}
 }

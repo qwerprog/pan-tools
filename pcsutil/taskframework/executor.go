@@ -72,19 +72,6 @@ func (te *TaskExecutor) Append(unit TaskUnit, maxRetry int) *TaskInfo {
 	return taskInfo
 }
 
-// AppendNoRetry 将任务加到任务队列末尾, 不重试
-func (te *TaskExecutor) AppendNoRetry(unit TaskUnit) {
-	te.Append(unit, 0)
-}
-
-// Count 返回任务数量
-func (te *TaskExecutor) Count() int {
-	if te.deque == nil {
-		return 0
-	}
-	return te.deque.Size()
-}
-
 // Execute 执行任务
 func (te *TaskExecutor) Execute() {
 	te.lazyInit()
@@ -223,12 +210,4 @@ func (te *TaskExecutor) Stop() {
 // Stopped 返回是否已请求停止
 func (te *TaskExecutor) Stopped() bool {
 	return atomic.LoadInt32(&te.stopped) == 1
-}
-
-// Pause 暂停执行
-func (te *TaskExecutor) Pause() {
-}
-
-// Resume 恢复执行
-func (te *TaskExecutor) Resume() {
 }

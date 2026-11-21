@@ -34,16 +34,6 @@ func (mt *Monitor) GetAllWorkersRange() transfer.RangeList {
 	return allWorkerRanges
 }
 
-// NumLeftWorkers 返回尚未完成的 worker 数量
-func (mt *Monitor) NumLeftWorkers() (num int) {
-	for _, worker := range mt.snapshotWorkers() {
-		if !worker.Completed() {
-			num++
-		}
-	}
-	return
-}
-
 // IsLeftWorkersAllFailed 判断剩余未完成的线程是否全部处于失败状态
 func (mt *Monitor) IsLeftWorkersAllFailed() bool {
 	failedNum := 0

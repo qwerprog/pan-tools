@@ -83,7 +83,6 @@ func RunDownload(paths []string, options *DownloadOptions) error {
 		MaxRate:                    pcsconfig.Config.MaxDownloadRate,
 		InstanceStateStorageFormat: downloader.InstanceStateStorageFormatProto3,
 		IsTest:                     options.IsTest,
-		TryHTTP:                    !pcsconfig.Config.EnableHTTPS,
 	}
 
 	// 设置下载最大并发量
@@ -196,7 +195,6 @@ func RunDownload(paths []string, options *DownloadOptions) error {
 			EnableHTTPS:          &enableHTTPS,
 			VerbosePrinter:       pcsCommandVerbose,
 			PrintFormat:          printFmt,
-			ParentTaskExecutor:   &executor,
 			DownloadStatistic:    statistic,
 			Dashboard:            dashboard,
 			IsPrintStatus:        options.IsPrintStatus,

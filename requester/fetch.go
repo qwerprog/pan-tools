@@ -10,29 +10,6 @@ import (
 	"strings"
 )
 
-// HTTPGet 简单实现 http 访问 GET 请求
-func HTTPGet(urlStr string) (body []byte, err error) {
-	DefaultClient.lazyInit()
-	resp, err := DefaultClient.Get(urlStr)
-	if resp != nil {
-		defer resp.Body.Close()
-	}
-	if err != nil {
-		return nil, err
-	}
-	return io.ReadAll(resp.Body)
-}
-
-// Req 参见 *HTTPClient.Req, 使用默认 http 客户端
-func Req(method string, urlStr string, post interface{}, header map[string]string) (resp *http.Response, err error) {
-	return DefaultClient.Req(method, urlStr, post, header)
-}
-
-// Fetch 参见 *HTTPClient.Fetch, 使用默认 http 客户端
-func Fetch(method string, urlStr string, post interface{}, header map[string]string) (body []byte, err error) {
-	return DefaultClient.Fetch(method, urlStr, post, header)
-}
-
 // Req 实现 http／https 访问，
 // 根据给定的 method (GET, POST, HEAD, PUT 等等), urlStr (网址),
 // post (post 数据), header (header 请求头数据), 进行网站访问。

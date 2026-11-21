@@ -37,7 +37,6 @@ type (
 	ShareTransferMeta struct {
 		Filename     string
 		ShareID      string
-		FromUK       string
 		BDSToken     string
 		FsIDListJSON string
 		ItemNum      int
@@ -191,7 +190,6 @@ func (pcs *BaiduPCS) ExtractShareInfo(shareListURL, shareID, shareUK, bdstoken s
 	return &ShareTransferMeta{
 		Filename:     filename,
 		ShareID:      shareID,
-		FromUK:       shareUK,
 		BDSToken:     bdstoken,
 		FsIDListJSON: "[" + strings.Join(fids, ",") + "]",
 		ItemNum:      len(fsidResults),

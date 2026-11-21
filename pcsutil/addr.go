@@ -21,12 +21,3 @@ func ListAddresses() (addresses []string) {
 	}
 	return
 }
-
-// ParseHost 解析地址中的host
-func ParseHost(address string) string {
-	h, _, err := net.SplitHostPort(address)
-	if err != nil {
-		return address
-	}
-	return h
-}

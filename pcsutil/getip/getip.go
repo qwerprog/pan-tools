@@ -26,12 +26,3 @@ func IPInfoByClient(c *requester.HTTPClient) (ipAddr string, err error) {
 	}
 	return
 }
-
-// IPInfo 从 ipify 获取公网 IP 地址
-func IPInfo(https bool) (ipAddr string, err error) {
-	c := requester.NewHTTPClient()
-	if https {
-		c.SetHTTPSecure(true)
-	}
-	return IPInfoByClient(c)
-}

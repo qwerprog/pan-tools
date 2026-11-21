@@ -22,9 +22,3 @@ func IPInfoFromTechainBaiduByClient(c *requester.HTTPClient) (ipAddr string, err
 	}
 	return converter.ToString(bytes.TrimSpace(body)), nil
 }
-
-// IPInfoFromTechainBaidu 从 techain.baidu.com 获取ip
-func IPInfoFromTechainBaidu() (ipAddr string, err error) {
-	c := requester.NewHTTPClient()
-	return IPInfoFromTechainBaiduByClient(c)
-}

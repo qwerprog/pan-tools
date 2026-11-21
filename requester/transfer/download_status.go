@@ -2,7 +2,6 @@ package transfer
 
 import (
 	"github.com/qjfoidnh/BaiduPCS-Go/requester/rio/speeds"
-	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -19,19 +18,17 @@ type (
 
 	//DownloadStatus 下载状态及统计信息
 	DownloadStatus struct {
-		totalSize        int64         // 总大小
-		downloaded       int64         // 已下载的数据量
-		speedsDownloaded int64         // 用于统计速度的downloaded
-		maxSpeeds        int64         // 最大下载速度
-		tmpSpeeds        int64         // 缓存的速度
-		speedsStat       speeds.Speeds // 速度统计 (注意对齐)
+		totalSize  int64         // 总大小
+		downloaded int64         // 已下载的数据量
+		maxSpeeds  int64         // 最大下载速度
+		tmpSpeeds  int64         // 缓存的速度
+		speedsStat speeds.Speeds // 速度统计 (注意对齐)
 
 		startTime time.Time // 开始下载的时间
 
 		rateLimit *speeds.RateLimit // 限速控制
 
 		gen *RangeListGen // Range生成状态
-		mu  sync.Mutex
 	}
 )
 

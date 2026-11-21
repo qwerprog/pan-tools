@@ -62,11 +62,6 @@ func RunCloudDlQueryTask(taskIDs []int64) error {
 	return nil
 }
 
-// RunCloudDlListTask 查询离线下载任务列表
-func RunCloudDlListTask() error {
-	return RunCloudDlListTaskWithOutput(ui.OutputPretty)
-}
-
 // RunCloudDlListTaskWithOutput 查询离线下载任务列表并支持多种输出模式。
 func RunCloudDlListTaskWithOutput(mode ui.OutputMode) error {
 	cl, err := GetBaiduPCS().CloudDlListTask()

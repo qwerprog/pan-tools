@@ -12,11 +12,6 @@ import (
 	"github.com/qjfoidnh/BaiduPCS-Go/pcsutil/converter"
 )
 
-// RunRecycleList 执行列出回收站文件列表
-func RunRecycleList(page int) error {
-	return RunRecycleListWithOutput(page, ui.OutputPretty)
-}
-
 // RunRecycleListWithOutput 列出回收站文件列表并支持多种输出格式。
 func RunRecycleListWithOutput(page int, mode ui.OutputMode) error {
 	if page < 1 {

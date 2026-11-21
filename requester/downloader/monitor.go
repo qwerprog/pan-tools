@@ -113,13 +113,6 @@ func (mt *Monitor) Append(worker *Worker) {
 	mt.workersMu.Unlock()
 }
 
-// SetWorkers 覆盖设置 workers
-func (mt *Monitor) SetWorkers(workers WorkerList) {
-	mt.workersMu.Lock()
-	mt.workers = workers
-	mt.workersMu.Unlock()
-}
-
 // SetStatus 设置 DownloadStatus
 func (mt *Monitor) SetStatus(status *transfer.DownloadStatus) {
 	mt.status = status
@@ -160,22 +153,6 @@ func (mt *Monitor) RangeWorker(f RangeWorkerFunc) {
 		if !f(k, workers[k]) {
 			break
 		}
-	}
-}
-
-// Pause 暂停所有的下载
-func (mt *Monitor) Pause() {
-	workers := mt.snapshotWorkers()
-	for k := range workers {
-		workers[k].Pause()
-	}
-}
-
-// Resume 恢复所有的下载
-func (mt *Monitor) Resume() {
-	workers := mt.snapshotWorkers()
-	for k := range workers {
-		workers[k].Resume()
 	}
 }
 

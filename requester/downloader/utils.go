@@ -1,12 +1,7 @@
 package downloader
 
 import (
-	"github.com/qjfoidnh/BaiduPCS-Go/pcsverbose"
-	"github.com/qjfoidnh/BaiduPCS-Go/requester"
 	mathrand "math/rand"
-	"mime"
-	"net/url"
-	"path"
 	"regexp"
 	"strconv"
 	"time"
@@ -31,38 +26,6 @@ func RandomNumber(min, max int) int {
 	return ran.Intn(max-min) + min
 }
 
-// GetFileName 获取文件名
-func GetFileName(uri string, client *requester.HTTPClient) (filename string, err error) {
-	if client == nil {
-		client = requester.NewHTTPClient()
-	}
-
-	resp, err := client.Req("HEAD", uri, nil, nil)
-	if resp != nil {
-		defer resp.Body.Close()
-	}
-	if err != nil {
-		return "", err
-	}
-
-	_, params, err := mime.ParseMediaType(resp.Header.Get("Content-Disposition"))
-	if err != nil {
-		pcsverbose.Verbosef("DEBUG: GetFileName ParseMediaType error: %s\n", err)
-		return path.Base(uri), nil
-	}
-
-	filename, err = url.QueryUnescape(params["filename"])
-	if err != nil {
-		return
-	}
-
-	if filename == "" {
-		filename = path.Base(uri)
-	}
-
-	return
-}
-
 // ParseContentRange 解析Content-Range
 func ParseContentRange(contentRange string) (contentLength int64) {
 	raw := ContentRangeRE.FindStringSubmatch(contentRange)
@@ -75,10 +38,4 @@ func ParseContentRange(contentRange string) (contentLength int64) {
 		return -1
 	}
 	return c
-}
-
-func fixCacheSize(size *int) {
-	if *size < 1024 {
-		*size = 1024
-	}
 }

@@ -35,11 +35,6 @@ type (
 )
 
 // ClearScreen 清空屏幕
-func (pl *PCSLiner) ClearScreen() {
-	ClearScreen()
-}
-
-// ClearScreen 清空屏幕
 func ClearScreen() {
 	out, _, _ := procGetStdHandle.Call(uintptr(std_output_handle))
 	hOut := syscall.Handle(out)

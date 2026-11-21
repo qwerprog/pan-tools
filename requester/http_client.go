@@ -212,14 +212,6 @@ func (h *HTTPClient) SetKeepAlive(b bool) {
 	h.transport.DisableKeepAlives = !b
 }
 
-// SetGzip 是否启用Gzip
-func (h *HTTPClient) SetGzip(b bool) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-	h.lazyInitLocked()
-	h.transport.DisableCompression = !b
-}
-
 // SetResponseHeaderTimeout 设置目标服务器响应超时时间
 func (h *HTTPClient) SetResponseHeaderTimeout(t time.Duration) {
 	h.mu.Lock()

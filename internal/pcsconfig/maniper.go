@@ -97,12 +97,6 @@ func (c *PCSConfig) GetBaiduUser(baidubase *BaiduBase) (*Baidu, error) {
 	return c.manipUser(opGet, baidubase)
 }
 
-// CheckBaiduUserExist 检查百度用户是否存在于已登录列表
-func (c *PCSConfig) CheckBaiduUserExist(baidubase *BaiduBase) bool {
-	_, err := c.manipUser("", baidubase)
-	return err == nil
-}
-
 var cookieHeaderPrefixRe = regexp.MustCompile(`(?i)^cookies?\s*:\s*`)
 
 // NormalizeCookieHeader 清理用户从浏览器开发者工具直接复制的 Cookie(s): 前缀与首尾空白。

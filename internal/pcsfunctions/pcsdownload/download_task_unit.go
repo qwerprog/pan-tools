@@ -28,9 +28,8 @@ type (
 		Cfg                *downloader.Config
 		PCS                *baidupcs.BaiduPCS
 		PanClientFunc      func() *requester.HTTPClient
-		PCSClientFunc      func() *requester.HTTPClient
-		EnableHTTPS        *bool
-		ParentTaskExecutor *taskframework.TaskExecutor
+		PCSClientFunc func() *requester.HTTPClient
+		EnableHTTPS   *bool
 
 		DownloadStatistic *DownloadStatistic // 下载统计
 		Dashboard         *ui.TransferDashboard

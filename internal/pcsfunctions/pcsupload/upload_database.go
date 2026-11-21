@@ -126,32 +126,6 @@ func (ud *UploadingDatabase) UpdateUploading(meta *checksum.LocalFileMeta, state
 	})
 }
 
-// UpdateFullBlock 一次性更新全部block的md5值
-func (ud *UploadingDatabase) UpdateFullBlock(meta *checksum.LocalFileMeta, state *uploader.InstanceState) {
-	ud.lock.Lock()
-	defer ud.lock.Unlock()
-	if meta == nil {
-		return
-	}
-	meta.CompleteAbsPath()
-	for k, uploading := range ud.UploadingList {
-		if uploading.LocalFileMeta == nil {
-			continue
-		}
-		if uploading.LocalFileMeta.EqualLengthMD5(meta) || uploading.LocalFileMeta.Path == meta.Path {
-			if len(meta.BlocksList) > 0 && state != nil {
-				for index, md5 := range meta.BlocksList {
-					if index < len(state.BlockList) && state.BlockList[index] != nil {
-						state.BlockList[index].CheckSum = md5
-					}
-				}
-			}
-			ud.UploadingList[k].State = state
-			return
-		}
-	}
-}
-
 func (ud *UploadingDatabase) deleteIndex(k int) {
 	ud.UploadingList = append(ud.UploadingList[:k], ud.UploadingList[k+1:]...)
 }

@@ -26,12 +26,8 @@ var BlockSizeList = [4]int64{256 * converter.KB, 512 * converter.KB, 1 * convert
 type (
 	// Downloader 下载
 	Downloader struct {
-		onExecuteEvent        requester.Event    //开始下载事件
 		onSuccessEvent        requester.Event    //成功下载事件
 		onFinishEvent         requester.Event    //结束下载事件
-		onPauseEvent          requester.Event    //暂停下载事件
-		onResumeEvent         requester.Event    //恢复下载事件
-		onCancelEvent         requester.Event    //取消下载事件
 		onDownloadStatusEvent DownloadStatusFunc //状态处理事件
 
 		cancelMu          sync.Mutex
@@ -41,7 +37,6 @@ type (
 		firstInfo               *DownloadFirstInfo // 初始信息
 		durlCheckFunc           DURLCheckFunc      // 下载url检测函数
 		statusCodeBodyCheckFunc StatusCodeBodyCheckFunc
-		executeTime             time.Time
 		durl                    string
 		writer                  io.WriterAt
 		client                  *requester.HTTPClient
@@ -81,15 +76,6 @@ func (der *Downloader) SetClient(client *requester.HTTPClient) {
 // SetDURLCheckFunc 设置下载URL检测函数
 func (der *Downloader) SetDURLCheckFunc(f DURLCheckFunc) {
 	der.durlCheckFunc = f
-}
-
-func (der *Downloader) SetFileContentLength(length int64) {
-	if der.firstInfo == nil {
-		der.firstInfo = &DownloadFirstInfo{
-			ContentLength: length,
-			AcceptRanges:  DefaultAcceptRanges,
-		}
-	}
 }
 
 // SetStatusCodeBodyCheckFunc 设置响应状态码出错的检查函数, 当FirstCheckMethod不为HEAD时才有效
@@ -222,10 +208,8 @@ func (der *Downloader) Execute() error {
 			return errors.New(checkResp.Status)
 		}
 
-		acceptRanges := checkResp.Header.Get("Accept-Ranges")
-		if contentLength < 0 {
-			acceptRanges = ""
-		} else {
+		var acceptRanges string
+		if contentLength >= 0 {
 			acceptRanges = DefaultAcceptRanges
 		}
 
@@ -302,13 +286,6 @@ func (der *Downloader) Execute() error {
 
 	var writer Writer
 	if !der.config.IsTest {
-		// 磁盘预分配逻辑, 现在固态硬盘已成主流因此废弃
-		//if fder, ok := der.writer.(Fder); ok {
-		//	err = prealloc.PreAlloc(fder.Fd(), status.TotalSize())
-		//	if err != nil {
-		//		pcsverbose.Verbosef("DEBUG: truncate file error: %s\n", err)
-		//	}
-		//}
 		writer = der.writer // 非测试模式, 赋值writer
 	}
 
@@ -362,8 +339,6 @@ func (der *Downloader) Execute() error {
 	der.monitor.SetInstanceState(der.instanceState)
 
 	// 开始执行
-	der.executeTime = time.Now()
-	pcsutil.Trigger(der.onExecuteEvent)
 	der.downloadStatusEvent() // 启动执行状态处理事件
 	der.monitor.Execute(monitorCtx)
 
@@ -406,24 +381,6 @@ func (der *Downloader) downloadStatusEvent() {
 	}()
 }
 
-// Pause 暂停
-func (der *Downloader) Pause() {
-	if der.monitor == nil {
-		return
-	}
-	pcsutil.Trigger(der.onPauseEvent)
-	der.monitor.Pause()
-}
-
-// Resume 恢复
-func (der *Downloader) Resume() {
-	if der.monitor == nil {
-		return
-	}
-	pcsutil.Trigger(der.onResumeEvent)
-	der.monitor.Resume()
-}
-
 // Cancel 取消
 func (der *Downloader) Cancel() {
 	der.cancelMu.Lock()
@@ -431,13 +388,7 @@ func (der *Downloader) Cancel() {
 	cancelFn := der.monitorCancelFunc
 	der.cancelMu.Unlock()
 
-	pcsutil.Trigger(der.onCancelEvent)
 	pcsutil.Trigger(cancelFn)
-}
-
-// OnExecute 设置开始下载事件
-func (der *Downloader) OnExecute(onExecuteEvent requester.Event) {
-	der.onExecuteEvent = onExecuteEvent
 }
 
 // OnSuccess 设置成功下载事件
@@ -448,21 +399,6 @@ func (der *Downloader) OnSuccess(onSuccessEvent requester.Event) {
 // OnFinish 设置结束下载事件
 func (der *Downloader) OnFinish(onFinishEvent requester.Event) {
 	der.onFinishEvent = onFinishEvent
-}
-
-// OnPause 设置暂停下载事件
-func (der *Downloader) OnPause(onPauseEvent requester.Event) {
-	der.onPauseEvent = onPauseEvent
-}
-
-// OnResume 设置恢复下载事件
-func (der *Downloader) OnResume(onResumeEvent requester.Event) {
-	der.onResumeEvent = onResumeEvent
-}
-
-// OnCancel 设置取消下载事件
-func (der *Downloader) OnCancel(onCancelEvent requester.Event) {
-	der.onCancelEvent = onCancelEvent
 }
 
 // OnDownloadStatusEvent 设置状态处理函数

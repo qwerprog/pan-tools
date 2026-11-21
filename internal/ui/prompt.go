@@ -289,11 +289,6 @@ func formatBoxedPrompt(w io.Writer, ctx PromptContext, brand string, width int, 
 	return line, inputPrompt
 }
 
-// ShortWorkdir 将网盘路径压缩为适合状态栏展示的 ~/... 短路径（根目录 '/' 显示为 '~'）。
-func ShortWorkdir(workdir string) string {
-	return shortHomeWorkdir(workdir, ASCIIOnly())
-}
-
 func shortHomeWorkdir(workdir string, ascii bool) string {
 	if workdir == "" || workdir == "/" || workdir == "." {
 		return "~"

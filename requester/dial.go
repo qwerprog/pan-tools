@@ -332,10 +332,6 @@ func proxyFunc(req *http.Request) (*url.URL, error) {
 	return u, nil
 }
 
-func getLocalTCPAddr() *net.TCPAddr {
-	return getLocalTCPAddrForIP(nil)
-}
-
 func getLocalTCPAddrForIP(dstIP net.IP) *net.TCPAddr {
 	dialConfigMu.RLock()
 	defer dialConfigMu.RUnlock()
@@ -532,16 +528,6 @@ func resolveTCPHostIPs(ctx context.Context, host string) (ips []net.IP, err erro
 		return nil, fmt.Errorf("no IP addresses found for host %q", host)
 	}
 	return ips, nil
-}
-
-// resolveTCPHost
-// 解析的tcpaddr没有port!!!
-func resolveTCPHost(ctx context.Context, host string) (ip net.IP, err error) {
-	ips, err := resolveTCPHostIPs(ctx, host)
-	if err != nil {
-		return nil, err
-	}
-	return ips[0], nil
 }
 
 func filterIPsForNetwork(network string, ips []net.IP) []net.IP {

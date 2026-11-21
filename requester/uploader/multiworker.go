@@ -33,16 +33,6 @@ func (wer *worker) setChecksum(cs string) {
 	wer.mu.Unlock()
 }
 
-// CheckSumList 返回所以worker的checksum
-// TODO: 实现sort
-func (werl *workerList) CheckSumList() []string {
-	checksumList := make([]string, 0, len(*werl))
-	for _, wer := range *werl {
-		checksumList = append(checksumList, wer.getChecksum())
-	}
-	return checksumList
-}
-
 func (werl *workerList) Readed() int64 {
 	var readed int64
 	for _, wer := range *werl {

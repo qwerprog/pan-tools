@@ -1,9 +1,0 @@
-Package: pant
-Version: 5.0.0
-Homepage: https://github.com/qjfoidnh/BaiduPCS-Go
-Section: 实用工具
-Priority: optional
-Architecture: iphoneos-arm
-Installed-Size: 4096
-Maintainer: qjfoidnh <i@mail.qjfoidnh.com>
-Description: pan-tools (pant) 使用 Go 语言编写的现代百度网盘命令行与交互式终端客户端.

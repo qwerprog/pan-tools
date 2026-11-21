@@ -72,21 +72,6 @@ func (pcs *BaiduPCS) PrepareFilesDirectoriesList(path string, options *OrderOpti
 	return pcs.sendReqReturnReadCloser(reqTypePan, OperationFilesDirectoriesList, http.MethodGet, panURL.String(), nil, nil)
 }
 
-// PrepareFilesDirectoriesDiff 获取 cursor 后文件列表增量变更信息
-func (pcs *BaiduPCS) PrepareFilesDirectoriesDiff(cursor string) (dataReadCloser io.ReadCloser, pcsError pcserror.Error) {
-	pcs.lazyInit()
-	if cursor == "" {
-		cursor = "null"
-	}
-	ns := netdisksign.NewLocateDownloadSign(pcs.uid, pcs.GetBDUSS())
-	pcsURL := pcs.generatePanURL("batch/filediff", map[string]string{
-		"cursor":     cursor,
-		"clienttype": "1",
-	})
-	paramsURL := ns.URLParam()
-	return pcs.sendReqReturnReadCloser(reqTypePCS, OperationGetCursorDiff, http.MethodGet, pcsURL.String()+"&"+paramsURL, nil, nil)
-}
-
 // PrepareSearch 按文件名搜索文件, 只返回服务器响应数据和错误信息
 func (pcs *BaiduPCS) PrepareSearch(targetPath, keyword string, recursive bool) (dataReadCloser io.ReadCloser, pcsError pcserror.Error) {
 	pcs.lazyInit()
@@ -172,24 +157,6 @@ func (pcs *BaiduPCS) prepareCpMvOp(op string, cpmvJSON ...*CpMvJSON) (dataReadCl
 	mr.CloseMultipart()
 
 	return pcs.sendReqReturnReadCloser(reqTypePCS, op, http.MethodPost, pcsURL.String(), mr, nil)
-}
-
-// PrepareRename 重命名文件/目录, 只返回服务器响应数据和错误信息
-func (pcs *BaiduPCS) PrepareRename(from, to string) (dataReadCloser io.ReadCloser, pcsError pcserror.Error) {
-	return pcs.prepareCpMvOp(OperationRename, &CpMvJSON{
-		From: from,
-		To:   to,
-	})
-}
-
-// PrepareCopy 批量拷贝文件/目录, 只返回服务器响应数据和错误信息
-func (pcs *BaiduPCS) PrepareCopy(cpmvJSON ...*CpMvJSON) (dataReadCloser io.ReadCloser, pcsError pcserror.Error) {
-	return pcs.prepareCpMvOp(OperationCopy, cpmvJSON...)
-}
-
-// PrepareMove 批量移动文件/目录, 只返回服务器响应数据和错误信息
-func (pcs *BaiduPCS) PrepareMove(cpmvJSON ...*CpMvJSON) (dataReadCloser io.ReadCloser, pcsError pcserror.Error) {
-	return pcs.prepareCpMvOp(OperationMove, cpmvJSON...)
 }
 
 // PrepareLocateDownload 获取下载链接, 只返回服务器响应数据和错误信息

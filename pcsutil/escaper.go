@@ -46,13 +46,6 @@ func Escape(s string, escapeRunes []rune) string {
 	})
 }
 
-// EscapeStrings 转义字符串数组
-func EscapeStrings(ss []string, escapeRunes []rune) {
-	for k := range ss {
-		ss[k] = Escape(ss[k], escapeRunes)
-	}
-}
-
 // EscapeStringsByRuneFunc 转义字符串数组, 通过runeFunc
 func EscapeStringsByRuneFunc(ss []string, runeFunc RuneFunc) {
 	for k := range ss {

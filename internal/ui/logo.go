@@ -3,8 +3,6 @@ package ui
 import (
 	"io"
 	"strings"
-
-	"github.com/charmbracelet/lipgloss"
 )
 
 // RenderLogoLines 返回无缝箱线几何徽标（任意终端行高均不断裂，最大列宽 <= 50 列）。
@@ -50,9 +48,4 @@ func renderASCIILogoLines(w io.Writer, color bool) []string {
 		frame.Render("| +-+ |") + "  " + rule.Render("------------------------------------"),
 		frame.Render("+-^-^-+") + "  " + sub.Render("Fast Multi-Thread Cloud Storage CLI"),
 	}
-}
-
-// StyleWithRenderer 使用指定颜色配置创建一个空 Lipgloss 样式（便于外部复用）。
-func StyleWithRenderer(w io.Writer, color bool) lipgloss.Style {
-	return NewRenderer(w, &color).NewStyle()
 }

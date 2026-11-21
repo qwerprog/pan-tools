@@ -26,8 +26,6 @@ type (
 	PanHome struct {
 		initMu sync.Mutex
 		client *requester.HTTPClient
-		ua     string
-		bduss  string
 
 		sign1, sign3 []rune
 		timestamp    string

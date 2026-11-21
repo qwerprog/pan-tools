@@ -2,7 +2,6 @@ package pcsupload
 
 import (
 	"context"
-	"io"
 	"net/http"
 	"sync"
 	"sync/atomic"
@@ -25,8 +24,6 @@ type (
 		client     *requester.HTTPClient
 		clientOnce sync.Once
 	}
-
-	EmptyReaderLen64 struct{}
 )
 
 func (pu *PCSUpload) getUploadClient(jar http.CookieJar) *requester.HTTPClient {
@@ -38,18 +35,6 @@ func (pu *PCSUpload) getUploadClient(jar http.CookieJar) *requester.HTTPClient {
 		pu.client.SetTimeout(200 * time.Second)
 	})
 	return pu.client
-}
-
-func (e EmptyReaderLen64) Read(p []byte) (n int, err error) {
-	return 0, io.EOF
-}
-
-func (e EmptyReaderLen64) Len() int64 {
-	return 0
-}
-
-func NewPCSUpload(pcs *baidupcs.BaiduPCS, targetPath string) uploader.MultiUpload {
-	return NewPCSUploadWithClient(pcs, targetPath, nil)
 }
 
 // NewPCSUploadWithClient 允许注入已配置好的 HTTPClient，避免传输层直接读取全局单例配置。

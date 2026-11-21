@@ -26,14 +26,6 @@ func (sps *Speeds) initOnce() {
 	})
 }
 
-// SetInterval 设置刷新周期
-func (sps *Speeds) SetInterval(interval time.Duration) {
-	if interval <= 0 {
-		return
-	}
-	sps.interval = interval
-}
-
 // Add 原子操作, 增加数据量
 func (sps *Speeds) Add(count int64) {
 	// 初始化

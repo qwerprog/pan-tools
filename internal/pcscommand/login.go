@@ -15,11 +15,10 @@ import (
 )
 
 type loginPrompter struct {
-	line      *pcsliner.PCSLiner
-	reader    *bufio.Reader
-	useLiner  bool
-	stdinTTY  bool
-	stdoutTTY bool
+	line     *pcsliner.PCSLiner
+	reader   *bufio.Reader
+	useLiner bool
+	stdinTTY bool
 }
 
 func newLoginPrompter(in io.Reader) *loginPrompter {
@@ -32,8 +31,7 @@ func newLoginPrompter(in io.Reader) *loginPrompter {
 	}
 	stdoutTTY := ui.IsTTY(os.Stdout)
 	p := &loginPrompter{
-		stdinTTY:  stdinTTY,
-		stdoutTTY: stdoutTTY,
+		stdinTTY: stdinTTY,
 	}
 	if in == os.Stdin && stdinTTY && stdoutTTY && ui.TerminalWidth() >= 30 {
 		p.line = pcsliner.NewLiner()

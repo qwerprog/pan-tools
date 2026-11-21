@@ -25,7 +25,6 @@ type Config struct {
 	InstanceStateStorageFormat InstanceStateStorageFormat // 断点续传储存类型
 	InstanceStatePath          string                     // 断点续传信息路径
 	IsTest                     bool                       // 是否测试下载
-	TryHTTP                    bool                       // 是否尝试使用 http 连接
 }
 
 // NewConfig 返回默认配置
@@ -34,14 +33,6 @@ func NewConfig() *Config {
 		MaxParallel: ParallelSize,
 		CacheSize:   CacheSize,
 		IsTest:      false,
-	}
-}
-
-// Fix 修复配置信息, 使其合法
-func (cfg *Config) Fix() {
-	fixCacheSize(&cfg.CacheSize)
-	if cfg.MaxParallel < 1 {
-		cfg.MaxParallel = 1
 	}
 }
 

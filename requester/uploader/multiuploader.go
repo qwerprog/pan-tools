@@ -27,7 +27,6 @@ type (
 
 	// MultiUploader 多线程上传
 	MultiUploader struct {
-		onExecuteEvent      requester.Event        //开始上传事件
 		onSuccessEvent      requester.Event        //成功上传事件
 		onFinishEvent       requester.Event        //结束上传事件
 		onCancelEvent       requester.Event        //取消上传事件
@@ -176,7 +175,6 @@ func (muer *MultiUploader) Execute() {
 
 	// 开始上传
 	muer.executeTime = time.Now()
-	pcsutil.Trigger(muer.onExecuteEvent)
 
 	muer.uploadStatusEvent()
 
@@ -244,11 +242,6 @@ func (muer *MultiUploader) isStopped() bool {
 	default:
 		return false
 	}
-}
-
-// OnExecute 设置开始上传事件
-func (muer *MultiUploader) OnExecute(onExecuteEvent requester.Event) {
-	muer.onExecuteEvent = onExecuteEvent
 }
 
 // OnSuccess 设置成功上传事件

@@ -3,27 +3,12 @@ package pcsutil
 
 import (
 	"compress/gzip"
-	"fmt"
 	"io"
 	"math/rand"
-	"net/http/cookiejar"
-	"net/url"
-	"strings"
 	"time"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
-// ErrorColor 保留无 ANSI 转义的纯文本错误格式化函数，交由上层统一着色渲染。
-var ErrorColor = fmt.Sprint
-
-// TrimPathPrefix 去除目录的前缀
-func TrimPathPrefix(path, prefixPath string) string {
-	if prefixPath == "/" {
-		return path
-	}
-	return strings.TrimPrefix(path, prefixPath)
-}
 
 func GenerateRandomString(length int) string {
 	var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -42,23 +27,6 @@ func ContainsString(ss []string, s string) bool {
 		}
 	}
 	return false
-}
-
-// GetURLCookieString 返回指定 URL 匹配的 cookie 字串
-func GetURLCookieString(urlString string, jar *cookiejar.Jar) string {
-	if jar == nil {
-		return ""
-	}
-	u, err := url.Parse(urlString)
-	if err != nil {
-		return ""
-	}
-	cookies := jar.Cookies(u)
-	parts := make([]string, 0, len(cookies))
-	for _, v := range cookies {
-		parts = append(parts, v.String())
-	}
-	return strings.Join(parts, "; ")
 }
 
 // DecompressGZIP 对 io.Reader 数据, 进行 gzip 解压

@@ -26,10 +26,6 @@ func (t *TaskInfo) MaxRetry() int {
 	return t.maxRetry
 }
 
-func (t *TaskInfo) SetMaxRetry(maxRetry int) {
-	t.maxRetry = maxRetry
-}
-
 func (t *TaskInfo) Retry() int {
 	return t.retry
 }

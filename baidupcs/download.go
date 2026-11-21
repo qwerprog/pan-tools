@@ -63,39 +63,6 @@ func (ui *URLInfo) URLStrings(https bool) (urls []*url.URL) {
 	return urls
 }
 
-// SingleURL 返回单条下载链接
-func (ui *URLInfo) SingleURL(https bool) *url.URL {
-	if len(ui.URLs) < 1 {
-		return nil
-	}
-
-	for _, urlInfo := range ui.URLs {
-		if urlInfo.Encrypt == 0 { // 假设 Encrypt 是 int 类型
-			u, err := url.Parse(urlInfo.URL)
-			if err != nil {
-				continue // 如果解析失败，跳过当前 URL
-			}
-			u.Scheme = GetHTTPScheme(https)
-			return u
-		}
-	}
-	return nil
-}
-
-// LastURL 返回最后一条下载链接
-func (ui *URLInfo) LastURL(https bool) *url.URL {
-	if len(ui.URLs) < 1 {
-		return nil
-	}
-
-	u, err := url.Parse(ui.URLs[len(ui.URLs)-1].URL)
-	if err != nil {
-		return nil
-	}
-	u.Scheme = GetHTTPScheme(https)
-	return u
-}
-
 // DownloadFile 下载单个文件
 func (pcs *BaiduPCS) DownloadFile(path string, downloadFunc DownloadFunc) (err error) {
 	pcs.lazyInit()

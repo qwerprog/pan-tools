@@ -32,13 +32,6 @@ func NewExpires(dur time.Duration) Expires {
 	}
 }
 
-func NewExpiresAt(at time.Time) Expires {
-	StripMono(&at)
-	return &expires{
-		expiresAt: at,
-	}
-}
-
 func (ep *expires) GetExpires() time.Time {
 	return ep.expiresAt
 }
