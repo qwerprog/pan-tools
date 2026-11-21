@@ -3,13 +3,13 @@
         "FileVersion": {
             "Major": 5,
             "Minor": 0,
-            "Patch": 0,
+            "Patch": 1,
             "Build": 0
         },
         "ProductVersion": {
             "Major": 5,
             "Minor": 0,
-            "Patch": 0,
+            "Patch": 1,
             "Build": 0
         },
         "FileFlagsMask": "3f",
@@ -22,14 +22,14 @@
         "Comments": "",
         "CompanyName": "pan-tools Contributors",
         "FileDescription": "pan-tools - 现代百度网盘命令行与交互式终端客户端",
-        "FileVersion": "5.0.0",
+        "FileVersion": "5.0.1",
         "InternalName": "pant",
         "LegalCopyright": "© 2016-2026 iikira, qjfoidnh & pan-tools Contributors",
         "LegalTrademarks": "",
         "OriginalFilename": "pant.exe",
         "PrivateBuild": "",
         "ProductName": "pan-tools",
-        "ProductVersion": "5.0.0",
+        "ProductVersion": "5.0.1",
         "SpecialBuild": ""
     },
     "VarFileInfo": {
