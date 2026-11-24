@@ -1,8 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="pan-tools logo">
-  <rect width="128" height="128" rx="28" fill="#282C34"/>
-  <rect x="6" y="6" width="116" height="116" rx="22" fill="none" stroke="#3E4451" stroke-width="2"/>
-  <path d="M40 82h49a17 17 0 0 0 2.5-33.8A24 24 0 0 0 45.2 42 19 19 0 0 0 40 82z" fill="#21252B" stroke="#61AFEF" stroke-width="4.5" stroke-linejoin="round"/>
-  <path d="M64 49l13 13-13 13-13-13z" fill="#56B6C2"/>
-  <circle cx="64" cy="62" r="4.5" fill="#282C34"/>
-  <path d="M46 95h36" stroke="#98C379" stroke-width="4" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="pan-tools (pant) logo">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#131926"/>
+    </linearGradient>
+    <linearGradient id="cloudStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="50%" stop-color="#528BFF"/>
+      <stop offset="100%" stop-color="#C084FC"/>
+    </linearGradient>
+    <linearGradient id="panGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="50%" stop-color="#61AFEF"/>
+      <stop offset="100%" stop-color="#C084FC"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="124" height="124" rx="28" fill="url(#bg)" stroke="#30363d" stroke-width="2"/>
+  <g transform="translate(9.8, 9.0) scale(0.84)">
+    <path d="M 34.00 97.00 A 24.00 24.00 0 0 1 31.11 49.17 A 31.00 31.00 0 1 1 92.54 52.34 A 23.00 23.00 0 1 1 96.00 97.00 Z" fill="#161b22" stroke="url(#cloudStroke)" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M 34.00 90.50 A 17.50 17.50 0 1 1 39.35 56.34 A 24.50 24.50 0 1 1 81.96 62.85 A 16.50 16.50 0 1 1 96.00 90.50 Z" fill="#0d1117" stroke="#30363d" stroke-width="1.6" stroke-linejoin="round"/>
+    <g stroke="#22D3EE" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <line x1="53" y1="78" x2="53" y2="52"/>
+      <polyline points="45,60 53,51.5 61,60"/>
+    </g>
+    <g stroke="#C084FC" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <line x1="76" y1="51.5" x2="76" y2="77.5"/>
+      <polyline points="68,69.5 76,78 84,69.5"/>
+    </g>
+    <rect x="28" y="108" width="73" height="7" rx="3.5" fill="#21262d" stroke="#30363d" stroke-width="1.3"/>
+    <rect x="29.5" y="109.5" width="47" height="4" rx="2" fill="url(#panGrad)"/>
+    <circle cx="95" cy="111.5" r="2.2" fill="#3FB950"/>
+  </g>
 </svg>

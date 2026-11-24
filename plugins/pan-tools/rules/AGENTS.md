@@ -1,15 +1,6 @@
-# pan-tools Plugin Safety & Execution Rules
+# pan-tools (`pant`) Agent Rules
 
-When interacting with Baidu Netdisk through `pant` (`pan-tools`):
-
-1. **Always use non-interactive machine-friendly flags**:
-   - Pass `-q --no-color` on every `pant` invocation, and `--json` (or `--plain`) on commands that support structured output (`ls`, `search`, `who`, `loglist`, `quota`, `share list`, `recycle list`, `offlinedl list`).
-   - Never start the interactive `pant` REPL (bare `pant` with no subcommand) or the fullscreen TUI (`pant ui` / `tui` / `browse`) inside an automated shell command.
-
-2. **Confirm before destructive or public-exposure actions**:
-   - Require explicit user confirmation before executing `pant rm`, `pant recycle delete` (especially `-all`), `pant share set`, `pant logout`, or `pant config reset`.
-   - Always show the exact target remote paths or IDs before asking for confirmation.
-
-3. **Protect account credentials**:
-   - Never print, log, summarize, or commit `BDUSS`, `STOKEN`, `PTOKEN`, raw `Cookies`, or the contents of `~/.config/pan-tools/pcs_config.json`.
-   - If the user is not logged in, instruct them to run `pant login -qr` in their own terminal rather than asking them to paste credentials into chat unless they explicitly choose to do so.
+- **Structured & Non-Interactive Invocation**: Always pass `-q --no-color` before the subcommand, and `--json` (or `--plain`) before positional arguments on commands that support structured output (`who`, `loglist`, `quota`, `ls`, `search`, `share list`, `offlinedl list`, `recycle list`). Place all subcommand flags BEFORE positional arguments (`urfave/cli` v1 stops parsing flags at the first positional argument). Never launch interactive modes (`pant` with no args, `pant ui`/`tui`/`browse`, or bare `pant login`).
+- **Non-Interactive Safety**: Never execute destructive, overwriting, or public-exposure commands (`rm`, `recycle delete`, `recycle delete -all`, `share set`, `share cancel`, `offlinedl cancel`, `offlinedl delete`, `logout`, `config reset`, `download --ow`, `upload --policy overwrite`) without showing the exact target remote paths or IDs and obtaining explicit user confirmation first.
+- **Credential Protection**: Never read, print, log, summarize, or transmit raw `BDUSS`, `STOKEN`, `PTOKEN`, `Cookies`, or `~/.config/pan-tools/pcs_config.json`. If unauthenticated (`who --json` returns `uid == 0` or `name == ""`), instruct the user to run `pant login -qr` in their own terminal rather than asking them to paste credentials into chat.
+- **Rate-Limit Safety**: Do not override download/upload concurrency (`-p`, `-l`) above `1` for non-SVIP accounts unless the user explicitly asks.

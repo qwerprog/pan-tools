@@ -1,11 +1,11 @@
 {
   "name": "pan-tools",
   "displayName": "pan-tools (Baidu Netdisk)",
-  "version": "0.1.0",
-  "description": "Browse, search, download, upload, transfer share links, and manage Baidu Netdisk via the pant Go CLI.",
+  "version": "5.0.1",
+  "description": "Antigravity plugin for operating Baidu Netdisk via the pant Go CLI (browse, search, download, upload, share transfer, offline downloads, recycle bin, quotas & crypto toolbox).",
   "logo": "assets/logo.svg",
   "author": {
-    "name": "qwerprog",
+    "name": "QwerProg",
     "url": "https://github.com/qwerprog"
   },
   "homepage": "https://github.com/qwerprog/pan-tools",

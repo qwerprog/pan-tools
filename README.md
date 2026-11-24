@@ -82,6 +82,14 @@ pant u ./a.zip /备份  # 上传文件或目录
 pant tf <分享链接>    # 转存分享链接或整段分享口令
 ```
 
+### Antigravity AI Agent 插件
+
+```bash
+agy plugin install https://github.com/qwerprog/pan-tools/tree/main/plugins/pan-tools
+```
+
+安装后即可让 Antigravity AI Agent 通过 `pant -q --no-color --json` 安全地检索网盘文件、查询容量、转存分享链接、管理离线任务/回收站并执行本地加解密工具，同时内置凭据保护与高危操作二次确认护栏。
+
 ---
 
 ## 核心特性

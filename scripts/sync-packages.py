@@ -206,4 +206,14 @@ if shutil.which("makepkg"):
     srcinfo = subprocess.check_output(["makepkg", "--printsrcinfo"], cwd=aur_dir, text=True)
     (aur_dir / ".SRCINFO").write_text(srcinfo, encoding="utf-8")
 
-print(f"Updated Homebrew, WinGet, and AUR manifests to {version}")
+# 4. Antigravity AI Agent Plugin (plugins/pan-tools/plugin.json)
+plugin_manifest = ROOT / "plugins/pan-tools/plugin.json"
+if plugin_manifest.exists():
+    plugin_data = json.loads(plugin_manifest.read_text(encoding="utf-8"))
+    plugin_data["version"] = version
+    plugin_manifest.write_text(
+        json.dumps(plugin_data, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+print(f"Updated Homebrew, WinGet, AUR, and Antigravity plugin manifests to {version}")

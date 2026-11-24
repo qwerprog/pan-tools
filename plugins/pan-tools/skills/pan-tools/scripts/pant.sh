@@ -49,6 +49,41 @@ resolve_pant() {
   return 1
 }
 
+fetch_text() {
+  url="$1"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "$url" 2>/dev/null
+  elif command -v wget >/dev/null 2>&1; then
+    wget -qO- "$url" 2>/dev/null
+  else
+    return 1
+  fi
+}
+
+download_file() {
+  url="$1"
+  dest="$2"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "$url" -o "$dest"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q -O "$dest" "$url"
+  else
+    return 1
+  fi
+}
+
+resolve_latest_tag() {
+  tag=""
+  if command -v curl >/dev/null 2>&1; then
+    tag=$(curl -sI "https://github.com/$REPO/releases/latest" 2>/dev/null | grep -i '^location:' | sed 's/.*tag\///' | tr -d '\r\n' || true)
+  fi
+  if [ -z "$tag" ]; then
+    release_json=$(fetch_text "https://api.github.com/repos/$REPO/releases/latest" || true)
+    tag=$(printf '%s\n' "$release_json" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n 1 || true)
+  fi
+  printf '%s\n' "$tag"
+}
+
 download_release() {
   os=$(uname -s | tr '[:upper:]' '[:lower:]')
   arch=$(uname -m)
@@ -59,30 +94,24 @@ download_release() {
   case "$arch" in
     x86_64|amd64) arch="amd64" ;;
     aarch64|arm64) arch="arm64" ;;
-    i386|i686) arch="386" ;;
-    armv7*|armhf) arch="arm" ;;
     *) return 1 ;;
   esac
 
-  if ! command -v curl >/dev/null 2>&1; then
-    return 1
-  fi
-
-  api_url="https://api.github.com/repos/$REPO/releases/latest"
-  release_json=$(curl -fsSL "$api_url" 2>/dev/null) || return 1
   if [ "$os" = "linux" ]; then
     ext="tar.gz"
-    dl_url=$(printf '%s\n' "$release_json" | grep -oE "https://[^\"]+pant-[^\"]*-${os}-${arch}\\.tar\\.gz" | head -n 1 || true)
   else
     ext="zip"
-    dl_url=$(printf '%s\n' "$release_json" | grep -oE "https://[^\"]+pant-[^\"]*-${os}-${arch}\\.zip" | head -n 1 || true)
   fi
-  [ -n "$dl_url" ] || return 1
+
+  tag=$(resolve_latest_tag)
+  [ -n "$tag" ] || return 1
+
+  dl_url="https://github.com/$REPO/releases/download/${tag}/pant-${tag}-${os}-${arch}.${ext}"
 
   tmp_dir=$(mktemp -d)
   trap 'rm -rf "$tmp_dir"' EXIT
   archive_file="$tmp_dir/pant.$ext"
-  curl -fsSL "$dl_url" -o "$archive_file" || return 1
+  download_file "$dl_url" "$archive_file" || return 1
 
   mkdir -p "$tmp_dir/unpack"
   if [ "$ext" = "tar.gz" ]; then
@@ -95,7 +124,7 @@ download_release() {
     return 1
   fi
 
-  extracted=$(find "$tmp_dir/unpack" -type f -name 'pant' | head -n 1 || true)
+  extracted=$(find "$tmp_dir/unpack" -maxdepth 3 -type f -name 'pant' | head -n 1 || true)
   [ -n "$extracted" ] || return 1
 
   mkdir -p "$CACHE_DIR"
@@ -109,9 +138,11 @@ if ! pant_bin=$(resolve_pant); then
   if ! pant_bin=$(download_release); then
     cat >&2 <<'EOF'
 Error: `pant` binary not found and automatic download from GitHub Releases failed.
-Install `pant` into your PATH (or set PANT_BIN=/path/to/pant):
-  - Build from source: git clone https://github.com/qwerprog/pan-tools && cd pan-tools && go build -o ~/.local/bin/pant .
-  - Or download a release from: https://github.com/qwerprog/pan-tools/releases
+Install `pant` via one of the following methods (or set PANT_BIN=/path/to/pant):
+  - One-liner: curl -fsSL https://raw.githubusercontent.com/qwerprog/pan-tools/main/install.sh | bash
+  - Homebrew:  brew install qwerprog/pan-tools/pant
+  - Arch AUR:  yay -S pan-tools-bin
+  - Releases:  https://github.com/qwerprog/pan-tools/releases
 EOF
     exit 127
   fi
